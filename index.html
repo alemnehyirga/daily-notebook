@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Notebook & Planner</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .font-handwriting {
+            font-family: 'Kalam', 'Caveat', cursive;
+        }
+
+        /* Torn Spiral Hole Top Trim Effect */
+        .spiral-top-holes {
+            background-image: radial-gradient(circle, #0f172a 6px, transparent 7px);
+            background-size: 20px 20px;
+            background-repeat: repeat-x;
+            background-position: center top;
+        }
+
+        /* Color Themes with High Realism Paper Textures */
+        .theme-maroon {
+            background-color: #6b1f2e;
+            color: #fce8eb;
+            --line-color: rgba(255, 255, 255, 0.28);
+        }
+        .theme-black {
+            background-color: #1c1c1c;
+            color: #f0f0f0;
+            --line-color: rgba(255, 255, 255, 0.22);
+        }
+        .theme-cyan {
+            background-color: #55c3c2;
+            color: #0d3837;
+            --line-color: rgba(0, 60, 60, 0.28);
+        }
+        .theme-red {
+            background-color: #dc4b4b;
+            color: #2b0808;
+            --line-color: rgba(0, 0, 0, 0.25);
+        }
+        .theme-green {
+            background-color: #a1c893;
+            color: #15380d;
+            --line-color: rgba(20, 60, 20, 0.25);
+        }
+        .theme-yellow {
+            background-color: #f3d755;
+            color: #3d3100;
+            --line-color: rgba(80, 65, 0, 0.25);
+        }
+        .theme-white {
+            background-color: #f4f2ee;
+            color: #222222;
+            --line-color: rgba(100, 110, 140, 0.25);
+        }
+
+        /* Paper Fiber Subtle Overlay */
+        .paper-texture {
+            background-image: 
+                linear-gradient(to bottom, rgba(255,255,255,0.03), rgba(0,0,0,0.08)),
+                repeating-linear-gradient(
+                    transparent,
+                    transparent 2.3rem,
+                    var(--line-color) 2.3rem,
+                    var(--line-color) calc(2.3rem + 1.5px)
+                );
+            background-position: 0 0, 0 1rem;
+        }
+
+        .completed-item {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="bg-slate-800/90 backdrop-blur-md border-b border-slate-700/80 px-4 py-3 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+            
+            <!-- Top / Left Side: Notebook Title & Descriptions -->
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-indigo-600 rounded-xl shadow-md">
+                    <i class="fa-solid fa-book-open text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl leading-tight text-white tracking-wide">Daily Notebook</h1>
+                    <div class="flex items-center gap-2 text-xs text-slate-300 font-medium mt-0.5">
+                        <span>Organize routine</span>
+                        <span class="text-slate-500">•</span>
+                        <span class="text-indigo-400 font-semibold">Notebook Sheets</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Clocks and New Sheet Button grouped together on the far right -->
+            <div class="flex items-center justify-end gap-3 sm:gap-4 w-full md:w-auto ml-auto">
+                
+                <!-- Digital Live Clock -->
+                <div class="flex items-center space-x-2 bg-slate-900/80 border border-slate-700/80 px-3 py-1.5 rounded-xl font-mono shadow-inner">
+                    <i class="fa-regular fa-clock text-indigo-400 text-xs sm:text-sm"></i>
+                    <span id="liveClock" class="text-xs sm:text-sm font-bold tracking-wider text-slate-100">00:00:00 AM</span>
+                </div>
+
+                <!-- Ge'ez Analog Clock (3cm size) -->
+                <div class="relative flex items-center justify-center bg-gradient-to-b from-slate-800 to-slate-950 border-2 border-indigo-500/80 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.25)] flex-shrink-0" style="width: 3cm; height: 3cm;" title="Ge'ez Analog Clock">
+                    <!-- Outer Bezel Ring -->
+                    <div class="absolute inset-0 rounded-full border border-indigo-400/30 pointer-events-none"></div>
+
+                    <!-- Ge'ez Numbers Dial (12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11) - Perfectly spaced around dial ring -->
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none text-[10px] font-bold text-slate-200">
+                        <span class="absolute" style="transform: rotate(0deg) translateY(-2.2rem) rotate(-0deg);">፲፪</span>
+                        <span class="absolute" style="transform: rotate(30deg) translateY(-2.2rem) rotate(-30deg);">፩</span>
+                        <span class="absolute" style="transform: rotate(60deg) translateY(-2.2rem) rotate(-60deg);">፪</span>
+                        <span class="absolute" style="transform: rotate(90deg) translateY(-2.2rem) rotate(-90deg);">፫</span>
+                        <span class="absolute" style="transform: rotate(120deg) translateY(-2.2rem) rotate(-120deg);">፬</span>
+                        <span class="absolute" style="transform: rotate(150deg) translateY(-2.2rem) rotate(-150deg);">፭</span>
+                        <span class="absolute" style="transform: rotate(180deg) translateY(-2.2rem) rotate(-180deg);">፮</span>
+                        <span class="absolute" style="transform: rotate(210deg) translateY(-2.2rem) rotate(-210deg);">፯</span>
+                        <span class="absolute" style="transform: rotate(240deg) translateY(-2.2rem) rotate(-240deg);">፰</span>
+                        <span class="absolute" style="transform: rotate(270deg) translateY(-2.2rem) rotate(-270deg);">፱</span>
+                        <span class="absolute" style="transform: rotate(300deg) translateY(-2.2rem) rotate(-300deg);">፲</span>
+                        <span class="absolute" style="transform: rotate(330deg) translateY(-2.2rem) rotate(-330deg);">፲፩</span>
+                    </div>
+
+                    <!-- Clock Hands with Green (Hour), Yellow (Minute), and Red (Second) Stick Colors -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <!-- Hour Hand (Green Stick) -->
+                        <div id="analogHourHand" class="absolute w-[3px] h-[1.1cm] bg-emerald-500 rounded-full origin-bottom transition-transform duration-200 shadow-sm z-10" style="bottom: 50%; transform-origin: bottom center; transform: rotate(0deg);"></div>
+                        <!-- Minute Hand (Yellow Stick) -->
+                        <div id="analogMinHand" class="absolute w-[2px] h-[1.35cm] bg-amber-400 rounded-full origin-bottom transition-transform duration-200 shadow-sm z-20" style="bottom: 50%; transform-origin: bottom center; transform: rotate(0deg);"></div>
+                        <!-- Second Hand (Red Stick) -->
+                        <div id="analogSecHand" class="absolute w-[1px] h-[1.45cm] bg-rose-500 origin-bottom transition-transform duration-75 z-30" style="bottom: 50%; transform-origin: bottom center; transform: rotate(0deg);"></div>
+                        <!-- Center Pin Pivot -->
+                        <div class="absolute w-[7px] h-[7px] bg-amber-300 border border-slate-900 rounded-full z-40 shadow-md"></div>
+                    </div>
+                </div>
+
+                <!-- New Sheet Action Control (Positioned to the rightmost end) -->
+                <button id="addSheetBtn" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition shadow-md active:scale-95 flex-shrink-0">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>New Sheet</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-6 flex flex-col md:flex-row gap-6">
+
+        <!-- Sidebar / Sheet Navigation -->
+        <aside class="w-full md:w-64 flex flex-col gap-4">
+            <div class="bg-slate-800/90 rounded-2xl p-4 border border-slate-700/80 shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Notebook Pages</h2>
+                    <span id="sheetCount" class="text-xs bg-slate-700 text-slate-300 px-2.5 py-0.5 rounded-full font-bold">0</span>
+                </div>
+
+                <!-- Sheet List Tabs -->
+                <div id="sheetsList" class="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[220px] md:max-h-[350px] custom-scroll pb-2 md:pb-0">
+                    <!-- Dynamic Sheet Tabs -->
+                </div>
+            </div>
+
+            <!-- Saved History Archive Section -->
+            <div class="bg-slate-800/90 rounded-2xl p-4 border border-slate-700/80 shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-xs font-semibold uppercase tracking-wider text-amber-400"><i class="fa-solid fa-box-archive mr-1"></i> Saved Routine History</h2>
+                    <span id="historyCount" class="text-xs bg-amber-950/80 text-amber-300 border border-amber-800/50 px-2 py-0.5 rounded-full font-bold">0</span>
+                </div>
+                <div id="historyList" class="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[180px] custom-scroll">
+                    <!-- Dynamic Saved Routine History Entries -->
+                </div>
+            </div>
+
+            <!-- Stats Card -->
+            <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700 text-xs space-y-3 hidden md:block">
+                <div class="text-slate-400 font-semibold uppercase tracking-wider text-[11px]">Sheet Completion</div>
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-300">Total Tasks:</span>
+                    <span id="totalTasksCount" class="font-bold text-slate-100 text-sm">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-300">Completed:</span>
+                    <span id="completedTasksCount" class="font-bold text-emerald-400 text-sm">0</span>
+                </div>
+                <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden mt-1">
+                    <div id="progressBar" class="bg-emerald-500 h-full w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Dynamic Active Sheet Display -->
+        <section class="flex-1 flex flex-col items-center">
+            
+            <!-- Controls Bar -->
+            <div class="w-full max-w-2xl flex flex-wrap justify-between items-center gap-3 mb-4 bg-slate-800/80 p-3 rounded-2xl border border-slate-700">
+                <!-- Color Selector Palette -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs text-slate-400 font-medium">Theme:</span>
+                    <div id="colorPicker" class="flex items-center space-x-1.5">
+                        <!-- Dynamic theme color buttons -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center space-x-2 flex-wrap">
+                    <button id="saveRoutineBtn" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-md">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Routine</span>
+                    </button>
+                    <button id="clearCompletedBtn" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 active:scale-95">
+                        <i class="fa-solid fa-broom"></i>
+                        <span>Clear Done</span>
+                    </button>
+                    <button id="deleteSheetBtn" class="text-xs bg-rose-900/40 hover:bg-rose-800/60 text-rose-300 border border-rose-700/50 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 active:scale-95">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Focus Session Timer Bar -->
+            <div class="w-full max-w-2xl mb-4 bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 shadow-md flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch text-indigo-400 text-base"></i>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Focus Session Timer</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <!-- Sound Alarm Toggle Button & Sound Test -->
+                        <button id="testSoundBtn" class="text-xs bg-indigo-700/60 hover:bg-indigo-600 text-indigo-200 px-2 py-1 rounded-lg transition flex items-center gap-1 active:scale-95" title="Test Alarm Sound">
+                            <i class="fa-solid fa-bell text-amber-300"></i>
+                            <span class="text-[10px] font-medium hidden sm:inline">Test Sound</span>
+                        </button>
+                        <button id="soundToggleBtn" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded-lg transition flex items-center gap-1" title="Toggle Alarm Sound">
+                            <i id="soundIcon" class="fa-solid fa-volume-high text-indigo-400"></i>
+                            <span id="soundStatus" class="text-[10px] font-medium hidden sm:inline">Sound ON</span>
+                        </button>
+                        <div id="timerDisplay" class="text-xl font-mono font-bold text-indigo-400 bg-slate-900/80 px-3 py-0.5 rounded-lg border border-slate-700">
+                            25:00
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Presets & Controls -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/60">
+                    <div class="flex items-center flex-wrap gap-1.5">
+                        <button type="button" data-mins="5" class="timer-preset-btn text-xs bg-slate-700 hover:bg-indigo-600 active:scale-95 text-slate-200 font-medium px-2 py-1 rounded-lg transition">5m</button>
+                        <button type="button" data-mins="10" class="timer-preset-btn text-xs bg-slate-700 hover:bg-indigo-600 active:scale-95 text-slate-200 font-medium px-2 py-1 rounded-lg transition">10m</button>
+                        <button type="button" data-mins="25" class="timer-preset-btn text-xs bg-indigo-600 text-white font-semibold px-2 py-1 rounded-lg transition shadow-sm">25m</button>
+                        <button type="button" data-mins="30" class="timer-preset-btn text-xs bg-slate-700 hover:bg-indigo-600 active:scale-95 text-slate-200 font-medium px-2 py-1 rounded-lg transition">30m</button>
+                        
+                        <div class="flex items-center bg-slate-900/60 border border-slate-700 rounded-lg px-2 py-0.5">
+                            <input id="customMinInput" type="number" min="1" max="180" placeholder="Custom" class="w-10 bg-transparent text-xs text-center text-slate-200 outline-none placeholder-slate-500">
+                            <span class="text-[10px] text-slate-400">m</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button id="startFlowBtn" class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-md active:scale-95">
+                            <i class="fa-solid fa-play text-xs"></i>
+                            <span>Start</span>
+                        </button>
+                        <button id="resetFlowBtn" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg transition active:scale-95" title="Reset">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lined Paper Sheet -->
+            <div id="paperSheet" class="w-full max-w-2xl rounded-xl shadow-2xl p-5 sm:p-8 min-h-[560px] flex flex-col transition-all duration-300 relative border border-black/10 paper-texture overflow-hidden">
+                
+                <!-- Spiral Hole Trim Header -->
+                <div class="w-full h-5 spiral-top-holes opacity-40 mb-3"></div>
+
+                <!-- Title & Date Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6 border-b-2 border-current pb-2">
+                    <input id="sheetTitleInput" type="text" class="bg-transparent font-handwriting text-2xl sm:text-3xl font-bold outline-none w-full border-none placeholder-current/50" placeholder="Sheet Title...">
+                    <input id="sheetDateInput" type="date" class="bg-transparent font-sans text-xs sm:text-sm font-semibold outline-none border-b border-current/30 px-1 py-0.5">
+                </div>
+
+                <!-- Add Task Form -->
+                <form id="addTaskForm" class="flex items-center gap-2 mb-4">
+                    <input id="taskInput" type="text" placeholder="+ Add a task or routine..." class="flex-1 bg-black/10 text-current placeholder-current/60 rounded-xl px-4 py-2.5 text-base sm:text-lg font-handwriting outline-none border border-transparent focus:border-current/30 transition">
+                    <button type="submit" class="px-4 py-2.5 bg-black/20 hover:bg-black/30 active:scale-95 rounded-xl text-sm font-bold transition">
+                        Add
+                    </button>
+                </form>
+
+                <!-- Task List Container -->
+                <div id="tasksContainer" class="flex-1 space-y-1 py-1">
+                    <!-- Dynamic tasks -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="hidden text-center py-12 opacity-50 space-y-2">
+                    <i class="fa-solid fa-pen-nib text-3xl"></i>
+                    <p
+class="font-handwriting text-lg">No activities listed on this page yet.</p>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- App Scripting -->
+    <script>
+        const THEMES = [
+            { id: 'maroon', name: 'Maroon', bg: '#6b1f2e', border: '#8b2b3e' },
+            { id: 'black', name: 'Dark Charcoal', bg: '#1c1c1c', border: '#333333' },
+            { id: 'cyan', name: 'Cyan/Turquoise', bg: '#55c3c2', border: '#3ba1a0' },
+            { id: 'red', name: 'Coral Red', bg: '#dc4b4b', border: '#b83232' },
+            { id: 'green', name: 'Soft Green', bg: '#a1c893', border: '#7fa372' },
+            { id: 'yellow', name: 'Warm Yellow', bg: '#f3d755', border: '#d4ba3b' },
+            { id: 'white', name: 'Clean White', bg: '#f4f2ee', border: '#d1cdc7' }
+        ];
+
+        let sheets = [];
+        let savedHistory = [];
+        let activeSheetId = null;
+        let timerTotalSeconds = 25 * 60;
+        let timerRemainingSeconds = 25 * 60;
+        let isTimerRunning = false;
+        let flowTimerInterval = null;
+        let isSoundMuted = false;
+        let audioCtx = null;
+
+        const addSheetBtn = document.getElementById('addSheetBtn');
+        const deleteSheetBtn = document.getElementById('deleteSheetBtn');
+        const clearCompletedBtn = document.getElementById('clearCompletedBtn');
+        const saveRoutineBtn = document.getElementById('saveRoutineBtn');
+        const sheetsList = document.getElementById('sheetsList');
+        const historyList = document.getElementById('historyList');
+        const historyCount = document.getElementById('historyCount');
+        const sheetCount = document.getElementById('sheetCount');
+        const sheetTitleInput = document.getElementById('sheetTitleInput');
+        const sheetDateInput = document.getElementById('sheetDateInput');
+        const taskInput = document.getElementById('taskInput');
+        const addTaskForm = document.getElementById('addTaskForm');
+        const tasksContainer = document.getElementById('tasksContainer');
+        const emptyState = document.getElementById('emptyState');
+        const paperSheet = document.getElementById('paperSheet');
+        const colorPicker = document.getElementById('colorPicker');
+        const totalTasksCount = document.getElementById('totalTasksCount');
+        const completedTasksCount = document.getElementById('completedTasksCount');
+        const progressBar = document.getElementById('progressBar');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startFlowBtn = document.getElementById('startFlowBtn');
+        const resetFlowBtn = document.getElementById('resetFlowBtn');
+        const customMinInput = document.getElementById('customMinInput');
+        const presetBtns = document.querySelectorAll('.timer-preset-btn');
+        const soundToggleBtn = document.getElementById('soundToggleBtn');
+        const testSoundBtn = document.getElementById('testSoundBtn');
+        const soundIcon = document.getElementById('soundIcon');
+        const soundStatus = document.getElementById('soundStatus');
+
+        function initApp() {
+            // Unlock audio on any click anywhere in the application
+            document.addEventListener('click', initAudioContext, { once: false });
+
+            const savedData = localStorage.getItem('daily_notebook_sheets');
+            if (savedData) {
+                try {
+                    sheets = JSON.parse(savedData);
+                } catch(e) {
+                    sheets = [];
+                }
+            }
+
+            const historyData = localStorage.getItem('daily_notebook_history');
+            if (historyData) {
+                try {
+                    savedHistory = JSON.parse(historyData);
+                } catch(e) {
+                    savedHistory = [];
+                }
+            }
+
+            if (!sheets || sheets.length === 0) {
+                createDefaultSheets();
+            }
+
+            activeSheetId = sheets[0].id;
+
+            renderColorPicker();
+            renderSheetTabs();
+            renderHistoryList();
+            renderActiveSheet();
+            initTimerLogic();
+            initLiveClock();
+            bindEventListeners();
+
+            if (soundToggleBtn) {
+                soundToggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    isSoundMuted = !isSoundMuted;
+                    if (isSoundMuted) {
+                        soundIcon.className = 'fa-solid fa-volume-xmark text-slate-400';
+                        if (soundStatus) soundStatus.textContent = 'Muted';
+                    } else {
+                        soundIcon.className = 'fa-solid fa-volume-high text-indigo-400';
+                        if (soundStatus) soundStatus.textContent = 'Sound ON';
+                        initAudioContext();
+                        playAlarmSound();
+                    }
+                });
+            }
+
+            if (testSoundBtn) {
+                testSoundBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    initAudioContext();
+                    playAlarmSound();
+                });
+            }
+
+            // Bind start and preset timer listeners
+            if (startFlowBtn) startFlowBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                initAudioContext();
+                toggleFlowTimer();
+            });
+            if (resetFlowBtn) resetFlowBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                resetFlowTimer();
+            });
+presetBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    initAudioContext();
+                    presetBtns.forEach(b => {
+                        b.classList.remove('bg-indigo-600', 'text-white', 'font-semibold');
+                        b.classList.add('bg-slate-700', 'text-slate-200');
+                    });
+                    e.target.classList.remove('bg-slate-700', 'text-slate-200');
+                    e.target.classList.add('bg-indigo-600', 'text-white', 'font-semibold');
+                    
+                    const mins = parseInt(e.target.dataset.mins) || 25;
+                    timerTotalSeconds = mins * 60;
+                    timerRemainingSeconds = timerTotalSeconds;
+                    updateTimerDisplay();
+                });
+            });
+
+            if (customMinInput) {
+                customMinInput.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    initAudioContext();
+                    const mins = parseInt(e.target.value) || 25;
+                    timerTotalSeconds = Math.max(1, Math.min(180, mins)) * 60;
+                    timerRemainingSeconds = timerTotalSeconds;
+                    updateTimerDisplay();
+                });
+            }
+        }
+
+        function initAudioContext() {
+            try {
+                if (!audioCtx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContextClass) {
+                        audioCtx = new AudioContextClass();
+                    }
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            } catch (e) {
+                console.error("Audio Context initialization error", e);
+            }
+        }
+
+        function playAlarmSound() {
+            if (isSoundMuted) return;
+
+            initAudioContext();
+
+            // Web Audio API Polyphonic Chime sequence extending for 10 seconds
+            if (audioCtx) {
+                try {
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+
+                    const now = audioCtx.currentTime;
+                    const frequencies = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    
+                    // Repeat chime pattern every 0.8 seconds for 10 seconds (12 cycles)
+                    for (let cycle = 0; cycle < 12; cycle++) {
+                        const cycleTime = now + (cycle * 0.8);
+                        
+                        frequencies.forEach((freq, index) => {
+                            const osc = audioCtx.createOscillator();
+                            const gainNode = audioCtx.createGain();
+
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(freq, cycleTime + (index * 0.12));
+
+                            gainNode.gain.setValueAtTime(0, cycleTime + (index * 0.12));
+                            gainNode.gain.linearRampToValueAtTime(0.6, cycleTime + (index * 0.12) + 0.02);
+                            gainNode.gain.exponentialRampToValueAtTime(0.0001, cycleTime + (index * 0.12) + 0.4);
+
+                            osc.connect(gainNode);
+                            gainNode.connect(audioCtx.destination);
+
+                            osc.start(cycleTime + (index * 0.12));
+                            osc.stop(cycleTime + (index * 0.12) + 0.45);
+                        });
+                    }
+
+                    console.log("10-second alarm chimed successfully.");
+                    return;
+                } catch (e) {
+                    console.warn("Web Audio chime failed, trying HTML5 Audio fallback", e);
+                }
+            }
+
+            // Fallback HTML5 Audio 10-second tone loop
+            try {
+                const sampleRate = 8000;
+                const numSamples = 80000; // 10 seconds
+                const buffer = new Uint8Array(44 + numSamples);
+                
+                const view = new DataView(buffer.buffer);
+                view.setUint32(0, 0x52494646, false); // "RIFF"
+                view.setUint32(4, 36 + numSamples, true);
+                view.setUint32(8, 0x57415645, false); // "WAVE"
+                view.setUint32(12, 0x666d7420, false); // "fmt "
+                view.setUint32(16, 16, true);
+                view.setUint16(20, 1, true); // PCM
+                view.setUint16(22, 1, true); // Mono
+                view.setUint32(24, sampleRate, true);
+                view.setUint32(28, sampleRate, true);
+                view.setUint16(32, 1, true);
+                view.setUint16(34, 8, true);
+                view.setUint32(36, 0x64617461, false); // "data"
+                view.setUint32(40, numSamples, true);
+
+                for (let i = 0; i < numSamples; i++) {
+                    const t = i / sampleRate;
+                    // Pulsing beep pattern every second
+                    const pulse = Math.sin(2 * Math.PI * 2 * t) > 0 ? 1 : 0.2;
+                    const val = Math.round(128 + 127 * Math.sin(2 * Math.PI * 440 * t) * pulse);
+                    buffer[44 + i] = val;
+                }
+
+                const blob = new Blob([buffer], { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+                const audio = new Audio(url);
+                audio.play().catch(err => console.log("Fallback audio play prevented", err));
+            } catch (err) {
+                console.error("All audio methods failed", err);
+            }
+        }
+
+        function toggleFlowTimer() {
+            if (isTimerRunning) {
+                pauseFlowTimer();
+            } else {
+                startFlowTimer();
+            }
+        }
+function startFlowTimer() {
+            if (timerRemainingSeconds <= 0) return;
+            isTimerRunning = true;
+            startFlowBtn.innerHTML = `<i class="fa-solid fa-pause text-xs"></i><span>Pause</span>`;
+            startFlowBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+            startFlowBtn.classList.add('bg-amber-600', 'hover:bg-amber-500');
+
+            flowTimerInterval = setInterval(() => {
+                timerRemainingSeconds--;
+                updateTimerDisplay();
+
+                if (timerRemainingSeconds <= 0) {
+                    pauseFlowTimer();
+                    timerDisplay.classList.add('animate-pulse', 'text-emerald-400');
+                    playAlarmSound();
+                }
+            }, 1000);
+        }
+
+        function pauseFlowTimer() {
+            isTimerRunning = false;
+            clearInterval(flowTimerInterval);
+            startFlowBtn.innerHTML = `<i class="fa-solid fa-play text-xs"></i><span>Start</span>`;
+            startFlowBtn.classList.remove('bg-amber-600', 'hover:bg-amber-500');
+            startFlowBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+        }
+
+        function resetFlowTimer() {
+            pauseFlowTimer();
+            timerRemainingSeconds = timerTotalSeconds;
+            timerDisplay.classList.remove('animate-pulse', 'text-emerald-400');
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerRemainingSeconds / 60);
+            const secs = timerRemainingSeconds % 60;
+            timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function initTimerLogic() {
+            updateTimerDisplay();
+        }
+
+        function initLiveClock() {
+            const liveClockEl = document.getElementById('liveClock');
+            const hourHand = document.getElementById('analogHourHand');
+            const minHand = document.getElementById('analogMinHand');
+            const secHand = document.getElementById('analogSecHand');
+
+            function updateClocks() {
+                const now = new Date();
+                
+                // Digital clock string
+                if (liveClockEl) {
+                    liveClockEl.textContent = now.toLocaleTimeString('en-US', { hour12: true });
+                }
+
+                // Analog hands calculation
+                const secs = now.getSeconds();
+                const mins = now.getMinutes();
+                const hours = now.getHours();
+
+                const secDeg = (secs / 60) * 360;
+                const minDeg = ((mins + secs / 60) / 60) * 360;
+                const hourDeg = (((hours % 12) + mins / 60) / 12) * 360;
+
+                if (secHand) secHand.style.transform = `rotate(${secDeg}deg)`;
+                if (minHand) minHand.style.transform = `rotate(${minDeg}deg)`;
+                if (hourHand) hourHand.style.transform = `rotate(${hourDeg}deg)`;
+            }
+
+            updateClocks();
+            setInterval(updateClocks, 1000);
+        }
+
+        function bindEventListeners() {
+            if (addSheetBtn) addSheetBtn.addEventListener('click', createNewSheet);
+            if (deleteSheetBtn) deleteSheetBtn.addEventListener('click', deleteCurrentSheet);
+            if (clearCompletedBtn) clearCompletedBtn.addEventListener('click', clearCompletedTasks);
+            if (saveRoutineBtn) saveRoutineBtn.addEventListener('click', saveRoutineToHistory);
+
+            if (sheetTitleInput) {
+                sheetTitleInput.addEventListener('input', (e) => {
+                    const sheet = getActiveSheet();
+                    if (sheet) {
+                        sheet.title = e.target.value;
+                        saveAndRefreshTabs();
+                    }
+                });
+            }
+
+            if (sheetDateInput) {
+                sheetDateInput.addEventListener('change', (e) => {
+                    const sheet = getActiveSheet();
+                    if (sheet) {
+                        sheet.date = e.target.value;
+                        saveAndRefreshTabs();
+                    }
+                });
+            }
+
+            if (addTaskForm) {
+                addTaskForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const text = taskInput.value.trim();
+                    if (text) {
+                        addTask(text);
+                        taskInput.value = '';
+                    }
+                });
+            }
+        }
+
+        function createDefaultSheets() {
+            const today = new Date().toISOString().split('T')[0];
+            sheets = [
+                {
+                    id: 'sheet-' + Date.now() + '-1',
+                    title: 'Daily Routine',
+                    date: today,
+                    theme: 'maroon',
+                    tasks: [
+                        { id: 't1', text: 'Morning workout & drink water', completed: true },
+                        { id: 't2', text: 'Review daily goals and planner', completed: false },
+                        { id: 't3', text: '30-minute focus session', completed: false }
+                    ]
+                }
+            ];
+            saveData();
+        }
+
+        function getActiveSheet() {
+            return sheets.find(s => s.id === activeSheetId);
+        }
+
+        function renderColorPicker() {
+            if (!colorPicker) return;
+            colorPicker.innerHTML = '';
+            THEMES.forEach(t => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'w-5 h-5 rounded-full border-2 transition transform hover:scale-110 shadow-sm';
+                btn.style.backgroundColor = t.bg;
+                btn.style.borderColor = t.border;
+                btn.title = t.name;
+                btn.addEventListener('click', () => changeSheetTheme(t.id));
+                colorPicker.appendChild(btn);
+            });
+        }
+
+        function renderSheetTabs() {
+            if (!sheetsList || !sheetCount) return;
+            sheetsList.innerHTML = '';
+            sheetCount.textContent = sheets.length;
+
+            sheets.forEach(s => {
+                const isSelected = s.id === activeSheetId;
+                const theme = THEMES.find(t => t.id === s.theme) || THEMES[0];
+                
+                const tab = document.createElement('button');
+                tab.className = `w-full text-left p-3 rounded-xl transition flex items-center justify-between border ${
+                    isSelected 
+                        ? 'bg-slate-700 border-indigo-500 shadow-md text-white' 
+                        : 'bg-slate-800/60 border-slate-700/70 text-slate-300 hover:bg-slate-700/50'
+                }`;
+
+                tab.innerHTML = `
+                    <div class="flex items-center space-x-2.5 overflow-hidden">
+                        <span class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${theme.bg}"></span>
+                        <div class="truncate">
+                            <p class="font-medium text-xs leading-tight truncate">${s.title || 'Untitled Sheet'}</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">${s.date || 'No Date'}</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] bg-slate-900/60 px-2 py-0.5 rounded-full font-mono text-slate-400">
+                        ${s.tasks.filter(t => t.completed).length}/${s.tasks.length}
+                    </span>
+                `;
+
+                tab.addEventListener('click', () => {
+                    activeSheetId = s.id;
+                    renderSheetTabs();
+                    renderActiveSheet();
+                });
+
+                sheetsList.appendChild(tab);
+            });
+        }
+
+        function saveRoutineToHistory() {
+            const sheet = getActiveSheet();
+            if (!sheet) return;
+
+            const entry = {
+                id: 'hist-' + Date.now(),
+                title: sheet.title || 'Saved Routine',
+                date: sheet.date || new Date().toISOString().split('T')[0],
+                theme: sheet.theme,
+                savedAt: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                tasks: JSON.parse(JSON.stringify(sheet.tasks))
+            };
+
+            savedHistory.unshift(entry);
+            localStorage.setItem('daily_notebook_history', JSON.stringify(savedHistory));
+            renderHistoryList();
+        }
+
+        function renderHistoryList() {
+            if (!historyList || !historyCount) return;
+            historyList.innerHTML = '';
+            historyCount.textContent = savedHistory.length;
+
+            if (savedHistory.length === 0) {
+                historyList.innerHTML = `<p class="text-[11px] text-slate-400 italic py-2 text-center">No saved history routines yet.</p>`;
+                return;
+            }
+
+            savedHistory.forEach((h, index) => {
+                const item = document.createElement('div');
+                item.className = 'bg-slate-900/80 hover:bg-slate-900 border border-amber-900/40 p-2.5 rounded-xl transition flex items-center justify-between gap-2';
+
+                item.innerHTML = `
+                    <div class="min-w-0 flex-1">
+                        <p class="text-xs font-semibold text-amber-200 truncate">${escapeHtml(h.title)}</p>
+                        <p class="text-[10px] text-slate-400">${h.date} • <span class="text-amber-400/80">${h.tasks.length} tasks</span></p>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <button class="restore-btn text-[10px] bg-amber-600 hover:bg-amber-500 text-white font-bold px-2 py-1 rounded-lg transition" title="Restore this routine">
+                            Load
+                        </button>
+                        <button class="delete-hist-btn text-slate-400 hover:text-rose-400 p-1 text-xs transition" title="Delete record">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+                item.querySelector('.restore-btn').addEventListener('click', () => {
+                    const restoredSheet = {
+                        id: 'sheet-' + Date.now(),
+                        title: h.title + ' (Restored)',
+                        date: new Date().toISOString().split('T')[0],
+                        theme: h.theme || 'maroon',
+                        tasks: JSON.parse(JSON.stringify(h.tasks))
+                    };
+                    sheets.push(restoredSheet);
+                    activeSheetId = restoredSheet.id;
+                    saveData();
+                    renderSheetTabs();
+                    renderActiveSheet();
+                });
+
+                item.querySelector('.delete-hist-btn').addEventListener('click', () => {
+                    savedHistory.splice(index, 1);
+                    localStorage.setItem('daily_notebook_history', JSON.stringify(savedHistory));
+                    renderHistoryList();
+                });
+
+                historyList.appendChild(item);
+            });
+        }
+
+        function renderActiveSheet() {
+            const sheet = getActiveSheet();
+            if (!sheet) return;
+
+            THEMES.forEach(t => paperSheet.classList.remove('theme-' + t.id));
+            paperSheet.classList.add('theme-' + (sheet.theme || 'maroon'));
+
+            sheetTitleInput.value = sheet.title || '';
+            sheetDateInput.value = sheet.date || '';
+
+            tasksContainer.innerHTML = '';
+
+            if (sheet.tasks.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                
+                sheet.tasks.forEach(task => {
+                    const item = document.createElement('div');
+                    item.className = 'group flex items-center justify-between py-1 px-2 rounded-lg transition hover:bg-black/5';
+                    
+                    item.innerHTML = `
+                        <label class="flex items-center space-x-3 cursor-pointer flex-1 min-w-0">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} class="w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer accent-slate-800">
+                            <span class="font-handwriting text-lg sm:text-xl truncate ${task.completed ? 'completed-item' : ''}">${escapeHtml(task.text)}</span>
+                        </label>
+                        <button class="delete-task-btn text-current opacity-40 hover:opacity-100 p-1 transition" title="Delete">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    `;
+
+                    item.querySelector('input').addEventListener('change', (e) => {
+                        task.completed = e.target.checked;
+                        saveData();
+                        renderActiveSheet();
+                        renderSheetTabs();
+                    });
+
+                    item.querySelector('.delete-task-btn').addEventListener('click', () => {
+                        sheet.tasks = sheet.tasks.filter(t => t.id !== task.id);
+                        saveData();
+                        renderActiveSheet();
+                        renderSheetTabs();
+                    });
+tasksContainer.appendChild(item);
+                });
+            }
+
+            updateStats();
+        }
+
+        function createNewSheet() {
+            const newSheet = {
+                id: 'sheet-' + Date.now(),
+                title: 'New Daily Sheet',
+                date: new Date().toISOString().split('T')[0],
+                theme: THEMES[Math.floor(Math.random() * THEMES.length)].id,
+                tasks: []
+            };
+            sheets.push(newSheet);
+            activeSheetId = newSheet.id;
+            saveData();
+            renderSheetTabs();
+            renderActiveSheet();
+        }
+
+        function deleteCurrentSheet() {
+            if (sheets.length <= 1) return;
+            sheets = sheets.filter(s => s.id !== activeSheetId);
+            activeSheetId = sheets[0].id;
+            saveData();
+            renderSheetTabs();
+            renderActiveSheet();
+        }
+
+        function changeSheetTheme(themeId) {
+            const sheet = getActiveSheet();
+            if (sheet) {
+                sheet.theme = themeId;
+                saveData();
+                renderSheetTabs();
+                renderActiveSheet();
+            }
+        }
+
+        function addTask(text) {
+            const sheet = getActiveSheet();
+            if (sheet) {
+                sheet.tasks.push({
+                    id: 'task-' + Date.now(),
+                    text: text,
+                    completed: false
+                });
+                saveData();
+                renderActiveSheet();
+                renderSheetTabs();
+            }
+        }
+
+        function clearCompletedTasks() {
+            const sheet = getActiveSheet();
+            if (sheet) {
+                sheet.tasks = sheet.tasks.filter(t => !t.completed);
+                saveData();
+                renderActiveSheet();
+                renderSheetTabs();
+            }
+        }
+
+        function updateStats() {
+            const sheet = getActiveSheet();
+            if (!sheet) return;
+
+            const total = sheet.tasks.length;
+            const completed = sheet.tasks.filter(t => t.completed).length;
+            const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+            if (totalTasksCount) totalTasksCount.textContent = total;
+            if (completedTasksCount) completedTasksCount.textContent = completed;
+            if (progressBar) progressBar.style.width = pct + '%';
+        }
+
+        function saveData() {
+            localStorage.setItem('daily_notebook_sheets', JSON.stringify(sheets));
+        }
+
+        function saveAndRefreshTabs() {
+            saveData();
+            renderSheetTabs();
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
